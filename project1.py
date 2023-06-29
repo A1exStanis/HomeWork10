@@ -37,18 +37,34 @@ class Bank:
 
 class TestAccount(unittest.TestCase):
     def test_account_balance(self):
-        account1 = Account(1000,103)
-        self.assertEqual(account1.balance, abs(account1.balance))
-        self.assertNotEqual(account1.balance,0)
+        account1 = Account(-1000,103)
+        account2 = Account(0,103)
+        account3 = Account(-1000,103)
+        list_ = [account1,account2,account3]
+        for account in list_:
+            self.assertEqual(account.balance, abs(account.balance))
     def test_saving_account(self):
-        account2 = SavingAccount(1000,101,25)
-        self.assertEqual(account2.balance, abs(account2.balance))
-        self.assertNotEqual(account2.balance,0)
-        self.assertEqual(account2.interest, abs(account2.interest))
-        self.assertNotEqual(account2.interest,0)
+        account1 = SavingAccount(1000,103,25)
+        account2 = SavingAccount(1000,103,0)
+        account3 = SavingAccount(1000,103,-10)
+        list_ = [account1,account2,account3]
+        for account in list_:
+            self.assertEqual(account.balance, abs(account.balance))
+            self.assertNotEqual(account.balance,0)
+            self.assertEqual(account.interest, abs(account.interest))
+            self.assertNotEqual(account.interest,0)
     def test_current_account(self):
-        account3 = CurrentAccount(1000,102,300)
-        self.assertEqual(account3.overdraft_limit, abs(account3.overdraft_limit))
-
+        account1 = CurrentAccount(1000,102,300)
+        account2 = CurrentAccount(1000,102,-300)
+        list_ = [account1,account2]
+        for account in list_:
+            self.assertEqual(account.overdraft_limit, abs(account.overdraft_limit))
+    def test_update(self):
+        a = SavingAccount(1000,101,25)
+        b = CurrentAccount(1000,102,300)
+        c = Account(1000,103)
+        banks = Bank([a,b,c])
+        banks.uppdate([a,b,c])
+        self.assertIsNone(banks.uppdate())
 
 unittest.main()
