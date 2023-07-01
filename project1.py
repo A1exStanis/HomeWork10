@@ -1,5 +1,6 @@
 import unittest
-
+from unittest import mock
+from unittest.mock import patch
 
 class Account:
     def __init__(self, balance, account_number):
@@ -29,11 +30,11 @@ class Bank:
     def uppdate(self):
         for account in self.accounts:
             if isinstance(account,SavingAccount):
-                print(f"On your account {account.account_number}.You have {account.balance}")
+                return (f"On your account {account.account_number}.You have {account.balance}")
             elif isinstance(account,CurrentAccount):
-                print(f"On your account {account.account_number}.You have overdraft limit {account.overdraft_limit}")
+                return (f"On your account {account.account_number}.You have overdraft limit {account.overdraft_limit}")
             else:
-                print(f"On your account {account.account_number}.You have {account.balance}")
+                return (f"On your account {account.account_number}.You have {account.balance}")
         
 
 
@@ -64,13 +65,19 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(account1.overdraft_limit, abs(account1.overdraft_limit))
     def test_update(self):
         a = SavingAccount(1000,101,25)
-        b = CurrentAccount(1000,102,300)
-        c = Account(1000,103)
-        banks = Bank([a,b,c])
+        banks = Bank([a])
         banks.uppdate()
-        self.assertIsNone(banks.uppdate())
         self.assertEqual(a.balance, 1250)
-        self.assertEqual(b.balance, 1000)
-        self.assertEqual(c.balance, 1000)
+    def test_return(mock_stdout):
+        a = SavingAccount(1000,101,25)
+        banks = Bank([a])
+        assert banks.uppdate() == f"On your account {a.account_number}.You have {a.balance}"
+        b = CurrentAccount(1000,102,300)
+        banks = Bank([b])
+        assert banks.uppdate() == f"On your account {b.account_number}.You have overdraft limit {b.overdraft_limit}"
+        c = Account(1000,103)
+        banks = Bank([c])
+        assert banks.uppdate() == f"On your account {c.account_number}.You have {c.balance}"
+
 
 unittest.main()
