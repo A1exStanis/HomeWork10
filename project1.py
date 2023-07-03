@@ -45,10 +45,10 @@ def test_print(mock_print):
     c = Account(1000,103)
     banks = Bank([c])
     banks.uppdate()
-    mock_print.assert_called_with('On your accsount 103.You have 1000')
+    mock_print.assert_called_with('On your account 103.You have 1000')
 
 
-# test_print()
+test_print()
 
 
 class TestAccount(unittest.TestCase):
