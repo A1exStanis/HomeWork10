@@ -1,6 +1,5 @@
 import unittest
-from unittest import mock
-from unittest.mock import patch
+from unittest.mock import Mock, patch, call
 
 class Account:
     def __init__(self, balance, account_number):
@@ -30,14 +29,26 @@ class Bank:
     def uppdate(self):
         for account in self.accounts:
             if isinstance(account,SavingAccount):
-                return (f"On your account {account.account_number}.You have {account.balance}")
+                print(f"On your account {account.account_number}.You have {account.balance}")
             elif isinstance(account,CurrentAccount):
-                return (f"On your account {account.account_number}.You have overdraft limit {account.overdraft_limit}")
+                print(f"On your account {account.account_number}.You have overdraft limit {account.overdraft_limit}")
             else:
-                return (f"On your account {account.account_number}.You have {account.balance}")
+                print(f"On your account {account.account_number}.You have {account.balance}")
         
 
+@patch('builtins.print')
+def test_print(mock_print):
+    b = CurrentAccount(1000,102,300)
+    banks = Bank([b])
+    banks.uppdate()       
+    mock_print.assert_called_with('On your account 102.You have overdraft limit 300')
+    c = Account(1000,103)
+    banks = Bank([c])
+    banks.uppdate()
+    mock_print.assert_called_with('On your accsount 103.You have 1000')
 
+
+# test_print()
 
 
 class TestAccount(unittest.TestCase):
@@ -65,19 +76,18 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(account1.overdraft_limit, abs(account1.overdraft_limit))
     def test_update(self):
         a = SavingAccount(1000,101,25)
-        banks = Bank([a])
-        banks.uppdate()
-        self.assertEqual(a.balance, 1250)
-    def test_return(mock_stdout):
-        a = SavingAccount(1000,101,25)
-        banks = Bank([a])
-        assert banks.uppdate() == f"On your account {a.account_number}.You have {a.balance}"
         b = CurrentAccount(1000,102,300)
-        banks = Bank([b])
-        assert banks.uppdate() == f"On your account {b.account_number}.You have overdraft limit {b.overdraft_limit}"
         c = Account(1000,103)
-        banks = Bank([c])
-        assert banks.uppdate() == f"On your account {c.account_number}.You have {c.balance}"
+        banks = Bank([a,b,c])
+        banks.uppdate()
+        self.assertIsNone(banks.uppdate())
+        self.assertEqual(a.balance, 1250)
+        self.assertEqual(b.balance, 1000)
+        self.assertEqual(c.balance, 1000)
+
+
 
 
 unittest.main()
+
+
